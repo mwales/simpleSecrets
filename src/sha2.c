@@ -35,25 +35,6 @@
 #include <assert.h>	/* assert() */
 #include "sha2.h"
 
-/*
- * ASSERT NOTE:
- * Some sanity checking code is included using assert().  On my FreeBSD
- * system, this additional code can be removed by compiling with NDEBUG
- * defined.  Check your own systems manpage on assert() to see how to
- * compile WITHOUT the sanity checking code on your system.
- *
- * UNROLLED TRANSFORM LOOP NOTE:
- * You can define SHA2_UNROLL_TRANSFORM to use the unrolled transform
- * loop version for the hash transform rounds (defined using macros
- * later in this file).  Either define on the command line, for example:
- *
- *   cc -DSHA2_UNROLL_TRANSFORM -o sha2 sha2.c sha2prog.c
- *
- * or define below:
- *
- *   #define SHA2_UNROLL_TRANSFORM
- *
- */
 
 
 /*** SHA-256/384/512 Machine Architecture Definitions *****************/
