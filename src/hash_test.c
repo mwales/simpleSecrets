@@ -41,11 +41,13 @@
 
 #include "sha2.h"
 #include "sha1.h"
+#include "md5.h"
 
 void usage(char *prog, char *msg)
 {
    fprintf(stderr, "%s\nUsage:\t%s [options] [<file>]\n"
                    "Options:\n"
+                   "\t-5\tGenerate MD5 hash\n"
                    "\t-1\tGenerate SHA-1 hash\n"
                    "\t-256\tGenerate SHA-256 hash\n"
                    "\t-384\tGenerate SHA-284 hash\n"
@@ -63,12 +65,14 @@ int main(int argc, char **argv)
 	int		quiet = 0, hash = 0;
 	char		*av, *file = (char*)0;
 	FILE		*IN = (FILE*)0;
+   MD5_CTX     ctxMd5;
 	SHA_CTX     ctxSha1;
 	SHA256_CTX	ctx256;
 	SHA384_CTX	ctx384;
 	SHA512_CTX	ctx512;
 	unsigned char	buf[BUFLEN];
 
+   MD5_Init(&ctxMd5);
 	SHA1_Init(&ctxSha1);
 	SHA256_Init(&ctx256);
 	SHA384_Init(&ctx384);
@@ -86,6 +90,9 @@ int main(int argc, char **argv)
          if (!strcmp(av, "q"))
          {
             quiet = 1;
+         } else if (!strcmp(av, "5"))
+         {
+            hash |= 16;
          } else if (!strcmp(av, "1"))
          {
             hash |= 8;
@@ -100,7 +107,7 @@ int main(int argc, char **argv)
             hash |= 4;
          } else if (!strcmp(av, "ALL"))
          {
-            hash = 15;
+            hash = 31;
          } else
          {
             usage(argv[0], "Invalid option.");
@@ -122,12 +129,13 @@ int main(int argc, char **argv)
       }
    }
    if (hash == 0)
-      hash = 15;	/* Default to ALL */
+      hash = 31;	/* Default to ALL */
 
    kl = 0;
    while ((l = read(fd,buf,BUFLEN)) > 0)
    {
       kl += l;
+      MD5_Update(&ctxMd5, buf, l);
       SHA1_Update(&ctxSha1, (unsigned char*)buf, l);
       SHA256_Update(&ctx256, (unsigned char*)buf, l);
       SHA384_Update(&ctx384, (unsigned char*)buf, l);
@@ -137,6 +145,13 @@ int main(int argc, char **argv)
       fclose(IN);
    }
 
+   if (hash & 16)
+   {
+      MD5_End(&ctxMd5, buf);
+      if (!quiet)
+         printf("    MD5 (%s) = ", file);
+      printf("%s\n", buf);
+   }
    if (hash & 8)
    {
       SHA1_End(&ctxSha1, buf);
