@@ -53,8 +53,7 @@
  * was designed and how this file is formatted.
  */
 
-#ifndef __HMAC_SHA1_H__
-#define __HMAC_SHA1_H__
+
 
 #include "hmac_sha1.h"
 #include <string.h>
@@ -189,8 +188,23 @@ void HMAC_SHA1_Done(HMAC_SHA1_CTX *ctx) {
 	ctx->hashkey = 0;
 } 
 
+void HMAC_SHA1_Data(unsigned char* data, size_t len,
+                    unsigned char* keyData, size_t keyLen,
+                    unsigned char* digest)
+{
+   HMAC_SHA1_CTX ctx;
+   HMAC_SHA1_Init(&ctx);
+
+   HMAC_SHA1_UpdateKey(&ctx, keyData, keyLen);
+   HMAC_SHA1_EndKey(&ctx);
+
+   HMAC_SHA1_StartMessage(&ctx);
+   HMAC_SHA1_UpdateMessage(&ctx, data, len);
+   HMAC_SHA1_EndMessage(digest, &ctx);
+}
+
 #ifdef  __cplusplus
 }
 #endif
 
-#endif
+

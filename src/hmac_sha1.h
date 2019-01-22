@@ -35,19 +35,6 @@
 #ifndef HEADER_HMAC_SHA1_H
 #define HEADER_HMAC_SHA1_H
 
-/*
- * Include SHA-1 stuff - CHOOSE WHICH SOURCE to use for the SHA1 functions
- *
- * Use the below include if your system has a library with SHA1 and be sure
- * to link to the library:
- */
-
-/* #include <sha.h> */
-
-/*
- * Or you can use Steve Reid's public domain SHA1 implementation:
- */
-
 #include "sha1.h"
 
 #ifdef  __cplusplus
@@ -75,6 +62,12 @@ void HMAC_SHA1_StartMessage(HMAC_SHA1_CTX *ctx);
 void HMAC_SHA1_UpdateMessage(HMAC_SHA1_CTX *ctx, unsigned char *data, unsigned int datalen);
 void HMAC_SHA1_EndMessage(unsigned char *out, HMAC_SHA1_CTX *ctx);
 void HMAC_SHA1_Done(HMAC_SHA1_CTX *ctx);
+
+// Have 20-bytes of memory allocated for digest before calling
+void HMAC_SHA1_Data(unsigned char* data, size_t len,
+                    unsigned char* keyData, size_t keyLen,
+                    unsigned char* digest);
+
 
 
 #ifdef	__cplusplus
