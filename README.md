@@ -23,11 +23,12 @@ Simple to use encryption and hashing tools.
 * HMAC_SHA1 hashing / authentication
 * PBKDF2_HMAC_SHA1 key derivation function
 * Simple demo programs / examples / crypto tools
+* AES-128 with CBC and CTR cipher modes
 
 ## To do list / outstanding features
 
-* AES-128, AES-192, and AES-256 symmetric encryption
-* CTR and CBC cipher modes
+* AES-192, and AES-256 symmetric encryption (TinyAES supported only one mode
+  at a time, depending on compiler switches)
 * Test on ARM 32-bit, Win 32, Win 64, Linux 32-bit (development on AMD64 only)
 * Windows support
 
@@ -47,5 +48,5 @@ For future development
 * SHA256/SHA384/SHA512 (BSD): Aaron D. Gifford (agifford@infowest.com)
 * HMAC_SHA1 (BSD): Aaron D. Gifford (agifford@infowest.com)
 * PBKDF2 (MIT): Michael Wales (mwales3@gmail.com)
-
+* AES (public domain): https://github.com/kokke
 
