@@ -128,21 +128,35 @@ void encryptionStep(enum CipherMode encMode, struct AES_ctx* ctx, uint8_t* buffe
 int main(int argc, char** argv)
 {
    int retVal = 1;
-   if (argc != 6)
+   if (argc != 7)
    {
       printf("Arg Error!\n");
-      printf("Usage: %s CTR|CBC_DEC|CBC_ENC IV_HEX KEY_HEX input.bin output.bin\n", argv[0]);
+      printf("Usage: %s CTR|CBC_DEC|CBC_ENC IV_HEX 128|192|256 KEY_HEX input.bin output.bin\n", argv[0]);
       printf("\nThis program is for demo purposes only! Don't use for real software\n");
       return retVal;
    }
 
    uint8_t iv[16];
-   uint8_t key[16];
+   uint8_t key[32];
    char* mode           = argv[1];
    char* ivHex          = argv[2];
-   char* keyHex         = argv[3];
-   char* inputFilename  = argv[4];
-   char* outputFilename = argv[5];
+   char* keyLenBitsStr  = argv[3];
+   char* keyHex         = argv[4];
+   char* inputFilename  = argv[5];
+   char* outputFilename = argv[6];
+
+   int keyLenBits = atoi(keyLenBitsStr);
+   if ( (keyLenBits != 128) && (keyLenBits != 192) && (keyLenBits != 256) )
+   {
+      fprintf(stderr, "Key length must be 128, 192, or 256 (not %s)\n", keyLenBitsStr);
+      return retVal;
+   }
+   else
+   {
+      printf("Key Length = %d\n", keyLenBits);
+   }
+
+   int keyLenBytes = keyLenBits / 8;
 
    printf("IV = ");
    memset(iv, 0, 16);
@@ -151,8 +165,8 @@ int main(int argc, char** argv)
 
    printf("Key = ");
    memset(key, 0, 16);
-   hex2binary(keyHex, key, 8);
-   hexdump(key, 8);
+   hex2binary(keyHex, key, keyLenBytes);
+   hexdump(key, keyLenBytes);
 
    enum CipherMode encMode;
    if (strcmp(mode, "CTR") == 0)
@@ -174,7 +188,7 @@ int main(int argc, char** argv)
    }
 
    struct AES_ctx ctx;
-   AES_init_ctx_iv(&ctx, key, iv);
+   AES_init_ctx_iv(&ctx, key, keyLenBits, iv);
 
    int inputFd = open(inputFilename, O_RDONLY);
    if (inputFd == -1)
@@ -195,9 +209,9 @@ int main(int argc, char** argv)
 
    const int BUF_SIZE = 16*512;
    uint8_t buffer[BUF_SIZE];
-   int bytesBuffered;
-   int readBytes;
-   int wroteBytes;
+   int bytesBuffered = 0;
+   int readBytes = 0;
+   int wroteBytes = 0;
 
    off_t fileSize = lseek(inputFd, 0, SEEK_END);
    lseek(inputFd, 0, SEEK_SET);

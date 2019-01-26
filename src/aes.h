@@ -7,31 +7,39 @@
 extern "C" {
 #endif
 
-#define AES128 1
-//#define AES192 1
-//#define AES256 1
+//#define AES128 1
+////#define AES192 1
+////#define AES256 1
 
 #define AES_BLOCKLEN 16 //Block length in bytes AES is 128b block only
 
-#if defined(AES256) && (AES256 == 1)
-    #define AES_KEYLEN 32
-    #define AES_keyExpSize 240
-#elif defined(AES192) && (AES192 == 1)
-    #define AES_KEYLEN 24
-    #define AES_keyExpSize 208
-#else
-    #define AES_KEYLEN 16   // Key length in bytes
-    #define AES_keyExpSize 176
-#endif
+//#if defined(AES256) && (AES256 == 1)
+//    #define AES_KEYLEN 32
+//    #define AES_keyExpSize 240
+//#elif defined(AES192) && (AES192 == 1)
+//    #define AES_KEYLEN 24
+//    #define AES_keyExpSize 208
+//#else
+//    #define AES_128_KEYLEN 16   // Key length in bytes
+//    #define AES_keyExpSize 176
+//#endif
+
+#define AES_128_KEYLEN 16   // Key length in bytes
+#define AES_192_KEYLEN 24   // Key length in bytes
+#define AES_256_KEYLEN 32   // Key length in bytes
+#define AES_keyExpSize_max 240
 
 struct AES_ctx
 {
-  uint8_t RoundKey[AES_keyExpSize];
+  uint8_t RoundKey[AES_keyExpSize_max];
   uint8_t Iv[AES_BLOCKLEN];
+  uint32_t KeyLenBytes;
+  uint32_t Nk;
+  uint32_t Nr;
 };
 
-void AES_init_ctx(struct AES_ctx* ctx, const uint8_t* key);
-void AES_init_ctx_iv(struct AES_ctx* ctx, const uint8_t* key, const uint8_t* iv);
+int AES_init_ctx(struct AES_ctx* ctx, const uint8_t* key, uint16_t keyLengthBits);
+int AES_init_ctx_iv(struct AES_ctx* ctx, const uint8_t* key, uint16_t keyLengthBits, const uint8_t* iv);
 
 void AES_ctx_set_iv(struct AES_ctx* ctx, const uint8_t* iv);
 
