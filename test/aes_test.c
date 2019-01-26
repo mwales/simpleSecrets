@@ -64,8 +64,6 @@ int readBytesFromFile(int fd, uint8_t* buffer, int bytesToRead)
    int bytesRead = 0;
    int readSize = 0;
 
-   fprintf(stderr, "readBytesFromFile: %d bytes\n", bytesToRead);
-
    while(bytesToRead)
    {
       readSize = read(fd, buffer + bytesRead, bytesToRead);
@@ -207,7 +205,7 @@ int main(int argc, char** argv)
       return 1;
    }
 
-   const int BUF_SIZE = 16*512;
+   const int BUF_SIZE = 8*512;
    uint8_t buffer[BUF_SIZE];
    int bytesBuffered = 0;
    int readBytes = 0;
