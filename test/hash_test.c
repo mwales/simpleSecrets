@@ -43,7 +43,7 @@
 #include "sha1.h"
 #include "md5.h"
 
-void usage(char *prog, char *msg)
+void usage(char const * const prog, char const * const msg)
 {
    fprintf(stderr, "%s\nUsage:\t%s [options] [<file>]\n"
                    "Options:\n"
@@ -71,6 +71,7 @@ int main(int argc, char **argv)
 	SHA384_CTX	ctx384;
 	SHA512_CTX	ctx512;
 	unsigned char	buf[BUFLEN];
+   char resultStr[BUFLEN];
 
    MD5_Init(&ctxMd5);
 	SHA1_Init(&ctxSha1);
@@ -147,38 +148,38 @@ int main(int argc, char **argv)
 
    if (hash & 16)
    {
-      MD5_End(&ctxMd5, buf);
+      MD5_End(&ctxMd5, resultStr);
       if (!quiet)
          printf("    MD5 (%s) = ", file);
-      printf("%s\n", buf);
+      printf("%s\n", resultStr);
    }
    if (hash & 8)
    {
-      SHA1_End(&ctxSha1, buf);
+      SHA1_End(&ctxSha1, resultStr);
       if (!quiet)
          printf("  SHA-1 (%s) = ", file);
-      printf("%s\n", buf);
+      printf("%s\n", resultStr);
    }
    if (hash & 1)
    {
-      SHA256_End(&ctx256, buf);
+      SHA256_End(&ctx256, resultStr);
       if (!quiet)
          printf("SHA-256 (%s) = ", file);
-      printf("%s\n", buf);
+      printf("%s\n", resultStr);
    }
    if (hash & 2)
    {
-      SHA384_End(&ctx384, buf);
+      SHA384_End(&ctx384, resultStr);
       if (!quiet)
          printf("SHA-384 (%s) = ", file);
-      printf("%s\n", buf);
+      printf("%s\n", resultStr);
    }
    if (hash & 4)
    {
-      SHA512_End(&ctx512, buf);
+      SHA512_End(&ctx512, resultStr);
       if (!quiet)
          printf("SHA-512 (%s) = ", file);
-      printf("%s\n", buf);
+      printf("%s\n", resultStr);
    }
 
    return 1;

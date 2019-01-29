@@ -16,7 +16,7 @@ void hexdump(unsigned char *data, int datalen)
 
 void pbkdf_test(char* pass, char* salt, int iters, int keyLen)
 {
-   uint8_t* keyData = malloc(keyLen);
+   uint8_t* keyData = (uint8_t*) malloc(keyLen);
 
    pbkdf2_sha1(pass, strlen(pass), salt, strlen(salt), iters, keyLen, keyData);
 

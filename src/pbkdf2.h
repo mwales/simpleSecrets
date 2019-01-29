@@ -3,6 +3,7 @@
 
 #include "sha1.h"
 #include "hmac_sha1.h"
+#include <stdint.h>
 
 // Implemented PBKDF2 myself.  Not going to set any speed records.
 
@@ -12,6 +13,6 @@
 void pbkdf2_sha1(char* pass, int passLen,
                  char* salt, int saltLength,
                  int numIterations, int dkLen,
-                 char* derivedKey);
+                 uint8_t* derivedKey);
 
 #endif

@@ -9,7 +9,7 @@
 void pbkdf2_sha1(char* pass, int passLen,
                  char* salt, int saltLength,
                  int numIterations, int dkLen,
-                 char* derivedKey)
+                 uint8_t* derivedKey)
 {
    const int PRF_BLOCK_LEN = 20;
 
@@ -20,7 +20,7 @@ void pbkdf2_sha1(char* pass, int passLen,
    }
 
    // We create our own buffer for the derived key so it will be on a block size
-   uint8_t* derivedKeyTemp = malloc(PRF_BLOCK_LEN * numBlocksDerivedKey);
+   uint8_t* derivedKeyTemp = (uint8_t*) malloc(PRF_BLOCK_LEN * numBlocksDerivedKey);
    memset(derivedKeyTemp, 0, PRF_BLOCK_LEN * numBlocksDerivedKey);
 
    int feedbackBlockLen = PRF_BLOCK_LEN;
@@ -30,8 +30,8 @@ void pbkdf2_sha1(char* pass, int passLen,
    }
 
    // We need to free this at the end
-   char* feedbackBlock = malloc(feedbackBlockLen);
-   char* hashResultBlock = malloc(PRF_BLOCK_LEN);
+   uint8_t*  feedbackBlock = (uint8_t*) malloc(feedbackBlockLen);
+   uint8_t*  hashResultBlock = (uint8_t*) malloc(PRF_BLOCK_LEN);
 
    for(int blockNum = 0; blockNum < numBlocksDerivedKey; blockNum++)
    {
@@ -47,13 +47,13 @@ void pbkdf2_sha1(char* pass, int passLen,
          if (iter == 0)
          {
             HMAC_SHA1_Data(feedbackBlock, saltLength + 4,
-                           pass, passLen,
+                           (uint8_t*) pass, passLen,
                            hashResultBlock);
          }
          else
          {
             HMAC_SHA1_Data(feedbackBlock, PRF_BLOCK_LEN,
-                           pass, passLen,
+                           (uint8_t*) pass, passLen,
                            hashResultBlock);
          }
 

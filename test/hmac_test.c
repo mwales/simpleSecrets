@@ -168,7 +168,7 @@ int main(int argc, char **argv) {
 			usage(argv[0]);
 		if (strlen(argv[2]) < 1)
 			fprintf(stderr, "%s: WARNING: Key contains no data.  Using null key anyway.\n", argv[0]);
-		HMAC_SHA1_UpdateKey(&ctx, argv[2], strlen(argv[2]));
+      HMAC_SHA1_UpdateKey(&ctx, (unsigned char*) argv[2], strlen(argv[2]));
 		HMAC_SHA1_EndKey(&ctx);
 		i = 3;
 	} else {

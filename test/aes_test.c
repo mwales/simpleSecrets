@@ -18,7 +18,7 @@ void hexdump(unsigned char *data, int datalen)
    printf("\n");
 }
 
-int hex2binary(char* string, char* binary, int binaryLength)
+int hex2binary(char* string, uint8_t* binary, int binaryLength)
 {
    char smallBuf[3];
    smallBuf[2] = 0;
@@ -328,7 +328,13 @@ int main(int argc, char** argv)
       }
 
       int realFileSize = fileSize - paddingVal;
-      ftruncate(outputFd, realFileSize);
+      int truncateStatus = ftruncate(outputFd, realFileSize);
+
+      if (truncateStatus == -1)
+      {
+         fprintf(stderr, "Error truncating the padding bytes after writing plaintext\n");
+         goto close_and_exit;
+      }
 
       printf("AES CBC Decryption complete, wrote %d bytes\n", realFileSize);
       retVal = 0;
