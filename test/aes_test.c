@@ -318,7 +318,8 @@ int main(int argc, char** argv)
          goto close_and_exit;
       }
 
-      for(int i = 16-paddingVal; i < 16; i++)
+      int i;
+      for(i = 16-paddingVal; i < 16; i++)
       {
          if (paddingVal != paddingBlock[i])
          {

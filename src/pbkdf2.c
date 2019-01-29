@@ -32,8 +32,9 @@ void pbkdf2_sha1(char* pass, int passLen,
    // We need to free this at the end
    uint8_t*  feedbackBlock = (uint8_t*) malloc(feedbackBlockLen);
    uint8_t*  hashResultBlock = (uint8_t*) malloc(PRF_BLOCK_LEN);
-
-   for(int blockNum = 0; blockNum < numBlocksDerivedKey; blockNum++)
+   
+   int blockNum;
+   for(blockNum = 0; blockNum < numBlocksDerivedKey; blockNum++)
    {
       // Setup initial salt
       memcpy(feedbackBlock, salt, saltLength);
@@ -41,8 +42,9 @@ void pbkdf2_sha1(char* pass, int passLen,
       feedbackBlock[saltLength+1] = ((blockNum+1) & 0xff) >> 16;
       feedbackBlock[saltLength+2] = ((blockNum+1) & 0xff) >> 8;
       feedbackBlock[saltLength+3] = (blockNum+1) & 0xff;
-
-      for(int iter = 0; iter < numIterations; iter++)
+      
+      int iter;
+      for(iter = 0; iter < numIterations; iter++)
       {
          if (iter == 0)
          {
@@ -59,7 +61,8 @@ void pbkdf2_sha1(char* pass, int passLen,
 
          memcpy(feedbackBlock, hashResultBlock, PRF_BLOCK_LEN);
 
-         for(int i = 0; i < PRF_BLOCK_LEN; i++)
+         int i;
+         for(i = 0; i < PRF_BLOCK_LEN; i++)
          {
             derivedKeyTemp[blockNum * PRF_BLOCK_LEN + i] ^= hashResultBlock[i];
          }
