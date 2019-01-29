@@ -5,10 +5,19 @@
 #include <string.h>
 #include <stdint.h>
 #include <sys/types.h>
-#include <unistd.h>
+
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
+
+#ifdef _WIN32
+   #include<io.h>
+#else
+   #include <unistd.h>
+   #define O_BINARY 0
+#endif
+
+#define BUF_SIZE 4096
 
 void hexdump(unsigned char *data, int datalen)
 {
@@ -188,7 +197,7 @@ int main(int argc, char** argv)
    struct AES_ctx ctx;
    AES_init_ctx_iv(&ctx, key, keyLenBits, iv);
 
-   int inputFd = open(inputFilename, O_RDONLY);
+   int inputFd = open(inputFilename, O_RDONLY | O_BINARY);
    if (inputFd == -1)
    {
       fprintf(stderr, "Error opening input file %s", inputFilename);
@@ -196,7 +205,7 @@ int main(int argc, char** argv)
       return 1;
    }
 
-   int outputFd = open(outputFilename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
+   int outputFd = open(outputFilename, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY, 0644);
    if (outputFd == -1)
    {
       fprintf(stderr, "Error opening output file %s", outputFilename);
@@ -205,7 +214,6 @@ int main(int argc, char** argv)
       return 1;
    }
 
-   const int BUF_SIZE = 8*512;
    uint8_t buffer[BUF_SIZE];
    int bytesBuffered = 0;
    int readBytes = 0;
@@ -329,6 +337,10 @@ int main(int argc, char** argv)
       }
 
       int realFileSize = fileSize - paddingVal;
+
+#ifdef _WIN32
+      _chsize_s(outputFd, realFileSize);
+#else
       int truncateStatus = ftruncate(outputFd, realFileSize);
 
       if (truncateStatus == -1)
@@ -336,7 +348,7 @@ int main(int argc, char** argv)
          fprintf(stderr, "Error truncating the padding bytes after writing plaintext\n");
          goto close_and_exit;
       }
-
+#endif
       printf("AES CBC Decryption complete, wrote %d bytes\n", realFileSize);
       retVal = 0;
    }

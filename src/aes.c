@@ -238,6 +238,7 @@ int AES_init_ctx(struct AES_ctx* ctx, const uint8_t* key,  uint16_t keyLengthBit
   }
 
   KeyExpansion(ctx, key);
+  return retVal;
 }
 
 int AES_init_ctx_iv(struct AES_ctx* ctx, const uint8_t* key,  uint16_t keyLengthBits, const uint8_t* iv)
@@ -251,6 +252,7 @@ int AES_init_ctx_iv(struct AES_ctx* ctx, const uint8_t* key,  uint16_t keyLength
 
   KeyExpansion(ctx, key);
   memcpy (ctx->Iv, iv, AES_BLOCKLEN);
+  return retVal;
 }
 
 void AES_ctx_set_iv(struct AES_ctx* ctx, const uint8_t* iv)
