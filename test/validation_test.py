@@ -3,6 +3,7 @@
 import random
 import os
 import sys
+import hashlib
 
 def randomHexString(length):
     retVal = ""
@@ -17,6 +18,22 @@ def randomHexString(length):
     return retVal
 
 
+def md5(fname):
+    """
+    Shamelessly stolen directly from Stackoverflow post https://stackoverflow.com/questions/3431825/generating-an-md5-checksum-of-a-file
+
+    Cause calling diff or cmp on empty files is sometime problematic
+    """
+    hash_md5 = hashlib.md5()
+    with open(fname, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            hash_md5.update(chunk)
+        return hash_md5.hexdigest()
+
+def areFilesSame(fileA, fileB):
+    hashA = md5(fileA)
+    hashB = md5(fileB)
+    return (hashA == hashB)
 
 def singleAesIteration(pathToBinaries, mode, keySize, testLength):
     print("AES Test Iteration of mode={}, key={}, len={}".format(mode, keySize, testLength))
@@ -48,11 +65,9 @@ def singleAesIteration(pathToBinaries, mode, keySize, testLength):
     os.system(aesTestCommand)
 
     #Diff the 2 CT files, see if they match
-    diffCommand = "diff openssl.ct.bin aesTest.ct.bin"
-    print(diffCommand)
+    ctIdentical = areFilesSame("openssl.ct.bin", "aesTest.ct.bin")
 
-    diffOk = os.system(diffCommand)
-    if (diffOk != 0):
+    if (not ctIdentical):
         print("CipherText files differ!")
 	return False
 
@@ -65,17 +80,14 @@ def singleAesIteration(pathToBinaries, mode, keySize, testLength):
 	return True
 
     # ../aes_test CTR|CBC_DEC|CBC_ENC IV_HEX 128|192|256 KEY_HEX input.bin output.bin
-    aesDecTestCommand = "{}/aes_test {}_DEC {} {} {} aesTest.ct.bin aesTest.verfiy.bin".format(
+    aesDecTestCommand = "{}/aes_test {}_DEC {} {} {} aesTest.ct.bin aesTest.verify.bin".format(
                         pathToBinaries, mode, IV, keySize, Key)
     print(aesDecTestCommand)
     os.system(aesDecTestCommand)
 
     #Diff the 2 CT files, see if they match
-    diffCommand = "diff aesTest.ct.bin plaintext.bin"
-    print(diffCommand)
-
-    diffOk = os.system(diffCommand)
-    if (diffOk != 0):
+    decryptionSuccess = areFilesSame("aesTest.verify.bin", "plaintext.bin")
+    if (not decryptionSuccess):
         print("Decryption failed!")
 	return False
 
